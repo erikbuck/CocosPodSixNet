@@ -9,70 +9,72 @@ import pyglet
 
 ##########################################################################################
 class GameClientChannel(Channel):
-	"""
-	This is the server representation of a single connected client.
-	"""
-	def __init__(self, *args, **kwargs):
-		self.nickname = "anonymous"
-		Channel.__init__(self, *args, **kwargs)
-	
-	def Close(self):
-		self._server.DelPlayer(self)
-	
-	##################################
-	### Network specific callbacks ###
-	##################################
-	
-	def Network_message(self, data):
-		self._server.SendToAll({"action": "message", "message": data['message'], "who": self.nickname})
-	
-	def Network_nickname(self, data):
-		self.nickname = data['nickname']
-		self._server.SendPlayers()
+    """
+    This is the server representation of a single connected client.
+    """
+    def __init__(self, *args, **kwargs):
+        self.nickname = str(self.addr)
+        Channel.__init__(self, *args, **kwargs)
+    
+    def Close(self):
+        self._server.DelPlayer(self)
+    
+    ##################################
+    ### Network specific callbacks ###
+    ##################################
+    
+    def Network_message(self, data):
+        print 'received', data['message'], 'from', self.nickname
+        sys.stdout.flush()
+        self._server.SendToAll({"action": "message", "message": data['message'], "who": self.nickname})
+    
+    def Network_nickname(self, data):
+        self.nickname = data['nickname']
+        self._server.SendPlayers()
 
 ##########################################################################################
 class GameServer(Server):
-	"""
-	This class keeps track of player clients and provides methods for sending messages 
+    """
+    This class keeps track of player clients and provides methods for sending messages 
     to player clients.
-	"""
+    """
 
-	channelClass = GameClientChannel
-	
-	def __init__(self, *args, **kwargs):
-		Server.__init__(self, *args, **kwargs)
-		self.playerChannels = WeakKeyDictionary()
-		print 'Server launched'
-	
-	def Connected(self, channel, addr):
+    channelClass = GameClientChannel
+    
+    def __init__(self, *args, **kwargs):
+        Server.__init__(self, *args, **kwargs)
+        self.playerChannels = WeakKeyDictionary()
+        print 'Server launched'
+    
+    def Connected(self, channel, addr):
         """ This method is called automatically when a player client connects. """
-		self.AddPlayer(channel)
-	
-	def AddPlayer(self, player):
+        self.AddPlayer(channel)
+    
+    def AddPlayer(self, player):
         """ This method stores a channel to player client in self.playerChannels keyed
         by channel. """
-		print "New Player" + str(player.addr)
-		self.playerChannels[player] = True
-		self.SendPlayers()
-		print "playerChannels", [p for p in self.playerChannels]
-	
-	def DelPlayer(self, player):
+        print "New Player" + str(player.addr)
+        self.playerChannels[player] = True
+        self.SendPlayers()
+        print "playerChannels", [p for p in self.playerChannels]
+    
+    def DelPlayer(self, player):
         """ This method deletes a channel to player client in self.playerChannels keyed
         by channel. """
-		print "Deleting Player" + str(player.addr)
-		del self.playerChannels[player]
-		self.SendPlayers()
-	
-	def SendPlayers(self):
+        print "Deleting Player" + str(player.addr)
+        del self.playerChannels[player]
+        self.SendPlayers()
+    
+    def SendPlayers(self):
         """ This method sends a list of player nicknames to every connected client 
         player. """
-		self.SendToAll({"action": "players", 
+        self.SendToAll({"action": "players", 
                 "players": [p.nickname for p in self.playerChannels]})
-	
-	def SendToAll(self, data):
+    
+    def SendToAll(self, data):
         """ This method sends data to every connected client player. """
-		[p.Send(data) for p in self.playerChannels]
-	
+        [p.Send(data) for p in self.playerChannels]
+    
 ##########################################################################################
 class ServerAction(cocos.actions.Action):
     """ This Cocos2D Action calls it target's step() method."""
@@ -92,6 +94,7 @@ class ServerLayer(cocos.layer.Layer):
         
     def step(self, dt):
         """ """
+        sys.stdout.flush()
         self.server.Pump()     
       
 ##########################################################################################
