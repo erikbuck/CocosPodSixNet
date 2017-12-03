@@ -48,7 +48,7 @@ class Game(object):
         self.port = port
         self.nickname = host
         print "starting", self.host, ":", self.port
-        menuBackgroundLayer = cocos.layer.ColorLayer(0, 255,0, 255,
+        menuBackgroundLayer = cocos.layer.ColorLayer(0, 100,0, 255,
             width=window.width, height=window.height)
         menuLayer = IntroMenu(self)
         menuBackgroundLayer.add(menuLayer)
