@@ -5,6 +5,7 @@ from weakref import WeakKeyDictionary
 from PodSixNet.Server import Server
 from PodSixNet.Channel import Channel
 import cocos
+import pyglet
 
 ##########################################################################################
 class GameClientChannel(Channel):
@@ -31,48 +32,59 @@ class GameClientChannel(Channel):
 
 ##########################################################################################
 class GameServer(Server):
+	"""
+	This class keeps track of player clients and provides methods for sending messages 
+    to player clients.
+	"""
+
 	channelClass = GameClientChannel
 	
 	def __init__(self, *args, **kwargs):
 		Server.__init__(self, *args, **kwargs)
-		self.players = WeakKeyDictionary()
+		self.playerChannels = WeakKeyDictionary()
 		print 'Server launched'
 	
 	def Connected(self, channel, addr):
+        """ This method is called automatically when a player client connects. """
 		self.AddPlayer(channel)
 	
 	def AddPlayer(self, player):
+        """ This method stores a channel to player client in self.playerChannels keyed
+        by channel. """
 		print "New Player" + str(player.addr)
-		self.players[player] = True
+		self.playerChannels[player] = True
 		self.SendPlayers()
-		print "players", [p for p in self.players]
+		print "playerChannels", [p for p in self.playerChannels]
 	
 	def DelPlayer(self, player):
+        """ This method deletes a channel to player client in self.playerChannels keyed
+        by channel. """
 		print "Deleting Player" + str(player.addr)
-		del self.players[player]
+		del self.playerChannels[player]
 		self.SendPlayers()
 	
 	def SendPlayers(self):
-		self.SendToAll({"action": "players", "players": [p.nickname for p in self.players]})
+        """ This method sends a list of player nicknames to every connected client 
+        player. """
+		self.SendToAll({"action": "players", 
+                "players": [p.nickname for p in self.playerChannels]})
 	
 	def SendToAll(self, data):
-		[p.Send(data) for p in self.players]
+        """ This method sends data to every connected client player. """
+		[p.Send(data) for p in self.playerChannels]
 	
-        
-
-
 ##########################################################################################
 class ServerAction(cocos.actions.Action):
-    """ """
+    """ This Cocos2D Action calls it target's step() method."""
     
     def step(self, dt):
         """ """
         self.target.step(dt)
 
-
 ##########################################################################################
 class ServerLayer(cocos.layer.Layer):
-    """ """
+    """ This is a base class that starts a PodSixNet server and pumps data to connected 
+    player clients """
     def start(self, host, port):
         """ """
         self.server = GameServer(localaddr=('', int(port)))
@@ -80,11 +92,11 @@ class ServerLayer(cocos.layer.Layer):
         
     def step(self, dt):
         """ """
-        self.server.Pump()
-
-
+        self.server.Pump()     
+      
 ##########################################################################################
 if __name__ == "__main__":
+    """ Setup both PodSixNet and Cocos2D. """
     host = 'localhost'
     port = '8081'
     if (len(sys.argv) != 2) and (len(sys.argv) != 0):
