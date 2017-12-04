@@ -45,19 +45,28 @@ class IntroMenu(cocos.menu.Menu):
 class Game(object):
     """ """
 
+    def __init__( self, windowWidth, windoHeight, caption, host, port ):
+        """ """
+        super( Game, self ).__init__()
+        self.host = host
+        self.port = port
+        ownID = socket.gethostbyname(socket.gethostname())
+        self.nickname = ownID
+        fullCaption = caption + ' ' + str(ownID) + ':' + str(port)
+        self.window = cocos.director.director.init(windowWidth, windoHeight, 
+                caption = fullCaption, 
+                fullscreen=False)
+
     def makeClientLayer(self):
         return ClientLayer()
         
     def makeServerLayer(self):
         return ServerLayer()
         
-    def run(self, window, nickname, host, port):
-        self.nickname = nickname
-        self.host = host
-        self.port = port
+    def run(self):
         print "starting", self.host, ":", self.port
         menuBackgroundLayer = cocos.layer.ColorLayer(0, 100, 0, 255,
-            width=window.width, height=window.height)
+            width=self.window.width, height=self.window.height)
         menuLayer = IntroMenu(self)
         menuBackgroundLayer.add(menuLayer)
         scene = cocos.scene.Scene(menuBackgroundLayer)
@@ -69,7 +78,7 @@ class Game(object):
         self.clientLayer = self.makeClientLayer()
         scene = cocos.scene.Scene(self.clientLayer)
         cocos.director.director.replace(FadeTRTransition(scene, 2))
-        self.clientLayer.start(host, port)
+        self.clientLayer.start(self.host, self.port)
         self.clientLayer.setNickname(self.nickname)
 
     def on_host_game(self):
@@ -77,7 +86,7 @@ class Game(object):
         self.serverLayer = self.makeServerLayer()
         scene = cocos.scene.Scene(self.serverLayer)
         cocos.director.director.replace(FadeTRTransition(scene, 2))
-        self.serverLayer.start(host, port)
+        self.serverLayer.start(self.host, self.port)
 
     def on_name(self, value):
         """ """
@@ -97,8 +106,5 @@ if __name__ == "__main__":
     else:
         host, port = sys.argv[1].split(":")
       
-    ownID = socket.gethostbyname(socket.gethostname())
-    caption = 'Wormageddon' + ' ' + str(ownID) + ':' + str(port)
-    window = cocos.director.director.init(1024, 760, caption = caption, fullscreen=False)
-    game = Game()
-    game.run(window, ownID, host, port)
+    game = Game(1024, 760, caption='Untitled', host=host, port=port)
+    game.run(ownID)
