@@ -78,7 +78,7 @@ class Game(object):
         self.clientLayer = self.makeClientLayer()
         scene = cocos.scene.Scene(self.clientLayer)
         cocos.director.director.replace(FadeTRTransition(scene, 2))
-        self.clientLayer.start(self.host, self.port)
+        self.clientLayer.start(self, self.host, self.port)
         self.clientLayer.setNickname(self.nickname)
 
     def on_host_game(self):
@@ -86,7 +86,7 @@ class Game(object):
         self.serverLayer = self.makeServerLayer()
         scene = cocos.scene.Scene(self.serverLayer)
         cocos.director.director.replace(FadeTRTransition(scene, 2))
-        self.serverLayer.start(self.host, self.port)
+        self.serverLayer.start(self, self.host, self.port)
 
     def on_name(self, value):
         """ """

@@ -121,8 +121,9 @@ class KeyboardInputLayer(cocos.layer.Layer):
 ##########################################################################################
 class ClientLayer(KeyboardInputLayer):
     """ """
-    def start(self, host, port):
+    def start(self, game, host, port):
         """ """
+        self.game = game
         self.client = Client(self, host, int(port))
         self.chatMessage = ''
         self.messageLabel = None
@@ -186,7 +187,7 @@ if __name__ == "__main__":
     window = cocos.director.director.init(1024, 760)
     clientLayer = ClientLayer()
     scene = cocos.scene.Scene(clientLayer)
-    clientLayer.start(host, port)
+    clientLayer.start(None, host, port)
     print 'GameClient'
     cocos.director.director.run(scene)
 

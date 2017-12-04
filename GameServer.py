@@ -87,8 +87,9 @@ class ServerAction(cocos.actions.Action):
 class ServerLayer(cocos.layer.Layer):
     """ This is a base class that starts a PodSixNet server and pumps data to connected 
     player clients """
-    def start(self, host, port):
+    def start(self, game, host, port):
         """ """
+        self.game = game
         self.server = GameServer(localaddr=('', int(port)))
         self.do(ServerAction())
         
@@ -112,6 +113,6 @@ if __name__ == "__main__":
     window = cocos.director.director.init(1024, 760)
     serverLayer = ServerLayer()
     scene = cocos.scene.Scene(serverLayer)
-    serverLayer.start(host, port)
+    serverLayer.start(None, host, port)
     #print 'GameServer'
     cocos.director.director.run(scene)
