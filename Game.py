@@ -48,6 +48,7 @@ class Game(object):
     def __init__( self, windowWidth, windoHeight, caption, host, port ):
         """ """
         super( Game, self ).__init__()
+        self.players = {}
         self.host = host
         self.port = port
         ownID = socket.gethostbyname(socket.gethostname())
@@ -62,6 +63,24 @@ class Game(object):
         
     def makeServerLayer(self):
         return ServerLayer()
+     
+    def makePlayer(self):
+        return None
+        
+    def addPlayer(self, playerId):
+        newPlayer = None
+        if playerId in self.players:
+            newPlayer = self.players[playerId]
+            #new_player.setRandomPosition()
+            #new_player.onRespawn()
+            #print 'respawning ', player_id
+        else:
+            #new_player = Player(player_id)
+            newPlayer = self.makePlayer()
+            self.players[playerId] = newPlayer
+            #new_player.start()
+            
+        print newPlayer
         
     def run(self):
         print "starting", self.host, ":", self.port

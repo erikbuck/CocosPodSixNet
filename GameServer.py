@@ -14,6 +14,7 @@ class GameClientChannel(Channel):
     """
     def __init__(self, *args, **kwargs):
         self.nickname = str(self.addr)
+        self.commands = []
         Channel.__init__(self, *args, **kwargs)
     
     def Close(self):
@@ -22,7 +23,11 @@ class GameClientChannel(Channel):
     ##################################
     ### Network specific callbacks ###
     ##################################
-    
+        
+    def Network_update(self, data):
+        print data
+        self.commands.append(data)
+        
     def Network_message(self, data):
         #print 'received', data['message'], 'from', self.nickname
         sys.stdout.flush()
@@ -95,6 +100,20 @@ class ServerLayer(cocos.layer.Layer):
         
     def step(self, dt):
         """ """
+        for channel in self.server.playerChannels: # Is this thread safe?!?
+            if not channel.addr[0] in self.game.players:
+                self.game.addPlayer(channel.addr[0])
+            
+            commands = channel.commands # Is this thread sage?!?
+            for command in commands:
+                if command['action'] == 'update':
+                    print 'command', command
+                else:
+                    print 'Error: Unknown command,', command,\
+                        'from client,', channel
+
+            channel.commands = [] # Is this thread safe?!?
+            
         sys.stdout.flush()
         self.server.Pump()     
       
