@@ -75,7 +75,8 @@ class ChatMenu(Menu):
         l.append( EntryMenuItem('Chat:', self.on_chat, '') )
         l.append( MenuItem('Send', self.on_send ) )
 
-        windowSize = cocos.director.director.get_window_size()
+        windowSize = (cocos.director.director.window.width, 
+                cocos.director.director.window.height)
         self.create_menu( l, layout_strategy=fixedPositionMenuLayout(
                 [(7, 14), (windowSize[0] - 80, 14)]))
 
@@ -187,5 +188,6 @@ if __name__ == "__main__":
     clientLayer = ClientLayer()
     scene = cocos.scene.Scene(clientLayer)
     clientLayer.start(host, port)
+    print 'GameClient'
     cocos.director.director.run(scene)
 

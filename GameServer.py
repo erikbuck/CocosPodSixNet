@@ -113,4 +113,5 @@ if __name__ == "__main__":
     serverLayer = ServerLayer()
     scene = cocos.scene.Scene(serverLayer)
     serverLayer.start(host, port)
+    print 'GameServer'
     cocos.director.director.run(scene)

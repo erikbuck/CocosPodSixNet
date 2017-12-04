@@ -1,4 +1,5 @@
 import sys
+import socket
 import cocos
 import pyglet
 from GameClient import ClientLayer
@@ -43,21 +44,28 @@ class IntroMenu(cocos.menu.Menu):
 ##########################################################################################
 class Game(object):
     """ """
+
+    def makeClientLayer(self):
+        return ClientLayer()
+        
+    def makeServerLayer(self):
+        return ServerLayer()
+        
     def run(self, window, host, port):
         self.host = host
         self.port = port
-        self.nickname = host
         print "starting", self.host, ":", self.port
-        menuBackgroundLayer = cocos.layer.ColorLayer(0, 100,0, 255,
+        menuBackgroundLayer = cocos.layer.ColorLayer(0, 100, 0, 255,
             width=window.width, height=window.height)
         menuLayer = IntroMenu(self)
         menuBackgroundLayer.add(menuLayer)
         scene = cocos.scene.Scene(menuBackgroundLayer)
+        cocos.director.director.set_show_FPS(True)
         cocos.director.director.run(scene)
 
     def on_join_game(self):
         """ """
-        self.clientLayer = ClientLayer()
+        self.clientLayer = makeClientLayer()
         scene = cocos.scene.Scene(self.clientLayer)
         cocos.director.director.replace(FadeTRTransition(scene, 2))
         self.clientLayer.start(host, port)
@@ -65,7 +73,7 @@ class Game(object):
 
     def on_host_game(self):
         """ """
-        self.serverLayer = ServerLayer()
+        self.serverLayer = self.makeServerLayer()
         scene = cocos.scene.Scene(self.serverLayer)
         cocos.director.director.replace(FadeTRTransition(scene, 2))
         self.serverLayer.start(host, port)
@@ -88,6 +96,8 @@ if __name__ == "__main__":
     else:
         host, port = sys.argv[1].split(":")
       
-    window = cocos.director.director.init(1024, 760)
+    ownID = socket.gethostbyname(socket.gethostname())
+    caption = 'Wormageddon' + ' ' + str(ownID) + ':' + str(port)
+    window = cocos.director.director.init(1024, 760, caption = caption, fullscreen=False)
     game = Game()
     game.run(window, host, port)
