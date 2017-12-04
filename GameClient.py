@@ -156,16 +156,15 @@ class ClientLayer(KeyboardInputLayer):
         self.chatMenu = None
         
     def on_chat( self, value ):
-        print 'on_chat(', value, ')'
         self.chatMessage = value
         
     def on_send( self ):
-        print 'Sending:', self.chatMessage
+        #print 'Sending:', self.chatMessage
         self.client.Send({"action": "message", "message":self.chatMessage})
         self.endChat()
     
     def showMessage(self, text):
-         print 'Showing:', self.chatMessage
+         #print 'Showing:', self.chatMessage
          self.messageLabel = cocos.text.Label(text=text, color=(128, 200, 128, 255), 
                 position=(7,28), font_size=14)
          self.add(self.messageLabel)

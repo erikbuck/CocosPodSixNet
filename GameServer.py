@@ -24,7 +24,7 @@ class GameClientChannel(Channel):
     ##################################
     
     def Network_message(self, data):
-        print 'received', data['message'], 'from', self.nickname
+        #print 'received', data['message'], 'from', self.nickname
         sys.stdout.flush()
         self._server.SendToAll({"action": "message", "message": data['message'], "who": self.nickname})
     
@@ -113,5 +113,5 @@ if __name__ == "__main__":
     serverLayer = ServerLayer()
     scene = cocos.scene.Scene(serverLayer)
     serverLayer.start(host, port)
-    print 'GameServer'
+    #print 'GameServer'
     cocos.director.director.run(scene)

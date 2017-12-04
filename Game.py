@@ -51,7 +51,8 @@ class Game(object):
     def makeServerLayer(self):
         return ServerLayer()
         
-    def run(self, window, host, port):
+    def run(self, window, nickname, host, port):
+        self.nickname = nickname
         self.host = host
         self.port = port
         print "starting", self.host, ":", self.port
@@ -65,7 +66,7 @@ class Game(object):
 
     def on_join_game(self):
         """ """
-        self.clientLayer = makeClientLayer()
+        self.clientLayer = self.makeClientLayer()
         scene = cocos.scene.Scene(self.clientLayer)
         cocos.director.director.replace(FadeTRTransition(scene, 2))
         self.clientLayer.start(host, port)
@@ -100,4 +101,4 @@ if __name__ == "__main__":
     caption = 'Wormageddon' + ' ' + str(ownID) + ':' + str(port)
     window = cocos.director.director.init(1024, 760, caption = caption, fullscreen=False)
     game = Game()
-    game.run(window, host, port)
+    game.run(window, ownID, host, port)
