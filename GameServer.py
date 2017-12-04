@@ -108,6 +108,8 @@ class ServerLayer(cocos.layer.Layer):
             for command in commands:
                 if command['action'] == 'update':
                     print 'command', command
+                    self.game.updateWithCommand(command)
+                    
                 else:
                     print 'Error: Unknown command,', command,\
                         'from client,', channel

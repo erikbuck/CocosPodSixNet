@@ -66,6 +66,9 @@ class Game(object):
      
     def makePlayer(self):
         return None
+    
+    def updateWithCommand(self, commandDict):
+        print commandDict
         
     def addPlayer(self, playerId):
         newPlayer = None
@@ -126,4 +129,4 @@ if __name__ == "__main__":
         host, port = sys.argv[1].split(":")
       
     game = Game(1024, 760, caption='Untitled', host=host, port=port)
-    game.run(ownID)
+    game.run()
